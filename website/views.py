@@ -8,7 +8,7 @@ from CP_func import new_char, OpenAIcall
 
 views = Blueprint("views", __name__)
 
-# these first three pages will be fairly static and won't change much
+# in the future, I will add a home page, so for now it redirects to the generator page
 @views.route("/")
 def home():
     return redirect(url_for("views.generate"))
@@ -30,6 +30,7 @@ def generate():
             request.form["init_align"],
             request.form["init_personality"],
             request.form["init_mood"],
+            request.form["init_phys_desc"]
             ]
 
         # calling the function that actually generates the new character with the current user inputs
@@ -44,6 +45,7 @@ def generate():
                 char_bg = rand_char["Background"],
                 char_motiv = rand_char["Motivation"],
                 char_align = rand_char["Alignment"],
+                char_phys_desc = rand_char["Physical Description"],
 
                 # the randomiser function returns lists for these two features 
                 # if they are randomly generated and strings if the user defined them
@@ -78,7 +80,7 @@ def generate_ai():
     # otherwise insert the category into the template
     new_prompt = \
         prompt if category == "other" \
-        else f"Create a detailed {category} description for a Dungeons & Dragons character using the following information: " + prompt
+        else f"Create a 3-sentence {category} description for a Dungeons & Dragons character using the following information: " + prompt
 
     # make a call to the AI using the updated prompt
     result = OpenAIcall(new_prompt)
@@ -152,6 +154,7 @@ def edit(id):
 
     # the POST request is when the user wants to send updates to their current character
     if request.method == "POST":
+
         # reassigning values for the stored character
         edit_char.char_name = request.form["name"]
         edit_char.char_class = request.form["class"]
@@ -161,6 +164,7 @@ def edit(id):
         edit_char.char_align = request.form["align"]
         edit_char.char_personality = request.form["personality"]
         edit_char.char_mood = request.form["mood"]
+        edit_char.char_phys_desc = request.form["phys_desc"]
 
         try:
             db.session.commit()

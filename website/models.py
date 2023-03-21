@@ -28,6 +28,7 @@ class Character(db.Model):
     char_align = db.Column(db.String, nullable=False)
     char_personality = db.Column(db.String, nullable=False)
     char_mood = db.Column(db.String, nullable=False)
+    char_phys_desc = db.Column(db.String, nullable=False)
 
     # storing the user who created this character using the primary key col in user table
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))

@@ -13,7 +13,7 @@ Circle of the Moon Druid
 Circle of the Land Druid
 Champion Fighter
 Battlemaster Fighter
-Eldritch Knight
+Eldritch Knight Fighter
 Way of the Open Hand Monk
 Way of the Shadow Monk
 Way of the Four Elements Monk

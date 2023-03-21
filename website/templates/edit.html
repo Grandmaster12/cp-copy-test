@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block head %}Character Editor | D&D Character Generator{% endblock %}
+{% block head %}Character Editor | Creacter {% endblock %}
 
 {% block body %}
 <!--
@@ -12,29 +12,32 @@
             This form calls the Edit end point that updates the stored values in the DB with the new values.
         -->
         <form action="/edit/{{char.id}}" method="POST">
-            <label for="fname">Name:</label><br>
+            <label for="name">Name:</label><br>
             <input type="text" name="name" id="new_name" value = "{{char.char_name}}"><br><br>
 
-            <label for="fname">Class:</label><br>
+            <label for="class">Class:</label><br>
             <input type="text" name="class" id="new_class" value = "{{char.char_class}}"><br><br>
 
-            <label for="fname">Race:</label><br>
+            <label for="race">Race:</label><br>
             <input type="text" name="race" id="new_race" value = "{{char.char_race}}"><br><br>
 
-            <label for="fname">Background:</label><br>
+            <label for="bg">Background:</label><br>
             <input type="text" name="bg" id="new_background" value = "{{char.char_bg}}"><br><br>
 
-            <label for="fname">Motivation:</label><br>
-            <input type="text" name="motiv" id="new_motiv" value = "{{char.char_motiv}}"><br><br>
+            <label for="motiv">Motivation:</label><br>
+            <input type="motiv" name="motiv" id="new_motiv" value = "{{char.char_motiv}}"><br><br>
 
-            <label for="fname">Alignment:</label><br>
+            <label for="align">Alignment:</label><br>
             <input type="text" name="align" id="new_align" value = "{{char.char_align}}"><br><br>
 
-            <label for="fname">Personality:</label><br>
+            <label for="personality">Personality:</label><br>
             <input type="text" name="personality" id="new_personality" value = "{{char.char_personality}}"><br><br>
 
-            <label for="fname">Mood:</label><br>
+            <label for="mood">Mood:</label><br>
             <input type="text" name="mood" id="new_mood" value = "{{char.char_mood}}"><br><br>
+
+            <label for="phys_desc">Physical Description:</label><br>
+            <input type="text" name="phys_desc" id="new_phys_desc" value = "{{char.char_phys_desc}}"><br><br>
 
             <input style="text-align: center" type = "submit" value="Edit Character"/>
         </form>

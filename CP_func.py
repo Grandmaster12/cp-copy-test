@@ -2,12 +2,12 @@
 import random, re, openai, os
 
 # use for Heroku deployment
-openai.api_key = os.environ["OPENAI_KEY"]
+#openai.api_key = os.environ["OPENAI_KEY"]
 
 # uncomment and use for local testing
-# from dotenv import load_dotenv
-# load_dotenv()
-# openai.api_key = os.getenv("OPENAI_KEY")
+from dotenv import load_dotenv
+load_dotenv()
+openai.api_key = os.getenv("OPENAI_KEY")
 
 # file names
 files = ["classes", "races", "backgrounds", "subraces", "subclasses", "personalities", "moods"]
@@ -53,6 +53,7 @@ database["alignments"] = alignments
 motiv_string = ""
 with open("text/motivations.txt", 'r') as file:
     for line in file.readlines():
+                # add each line to the current string
                 motiv_string += line
 
 # define the pattern to isolate the main motivation headings from the list
@@ -61,8 +62,24 @@ pattern = "\d+[.].+[.]"
 # use the pattern to find all 50 motivations from the text
 motivs = re.findall(pattern, motiv_string)
 
-# use a lambda function to remove the initial number, period, and space, and the ending fullstop
+# remove the initial number, period, and space, and the ending fullstop, and save each item as a list
 database["motivations"] = list(map(lambda motiv: motiv[motiv.find(".")+2 : -1], motivs))
+
+# importing physical descriptions
+with open("text/physical_desc.txt", "r") as file:
+        
+        phys_desc = {}
+
+        # iterate through each line
+        for line in file.readlines():
+            
+            # using tuple assignment, store each line after being divided by semi-colons
+            race, descriptions = line.rstrip().split(": ")
+
+            # store the names as a nested dictionary
+            phys_desc[race] = descriptions.split("; ")
+        
+        database["physical_desc"] = phys_desc
 
 
 # importing race-specific names:
@@ -79,9 +96,8 @@ def get_race_names():
     
     Exceptions:
     Elves have their last names followed by their English translations in brackets
-    Gnomes have an additional name category - Nicknames - because they usually go by their nicknames and a first and last name.
-    Tieflings might choose a name for themselves based on a concept or virtue that they want to live out in their lives,
-        so they have an additional Concept category.
+    Gnomes additionally have Nicknames (which they are usually referred to as) and a first and last name.
+    Tieflings might take a name based on a concept/virtue that they want to embody, so they have an additional Concept category.
     """
     # final dictionary of names for each race
     race_names = {}
@@ -146,6 +162,8 @@ race_names["human"] = get_human_names()
 
 # create new char
 def new_char(input_params, num_char):
+
+    # if the user does not specify how many characters, just return 1
     if num_char == "":
         num_char = 1
     else:
@@ -156,26 +174,65 @@ def new_char(input_params, num_char):
 
     for _ in range(num_char): 
         # tuple assignment for all input parameters
-        init_name, init_class, init_race, init_bg, init_motiv, init_align, init_personality, init_mood = input_params
+        init_name, init_class, init_race, init_bg, init_motiv, init_align, init_personality, init_mood, init_phys_desc = input_params
 
         # defining the potential values of empty strings
         invalid = ["", " "]
         
         sex = random.choice(["Male", "Female"])
-        new_race = init_race if init_race not in invalid else random.choice(database["races"])
-        subrace =  random.choice([subs for subs in database["subraces"] if new_race.title() in subs])
 
-        # if user inputs were not blank or space, save that as the character feature
-        # otherwise, make a random choice from the saved information
+        # checks if the user's input for Race is from the PHB and/or if it is not invalid
+        
+        # the value that is stored in the DB and displayed on the webpage
+        new_race = ""
+
+        # the race that is used for name and physical description
+        race_choice = ""
+
+        # the assignment of the 2 previous variables
+
+        # if user's submission is not "nothing"
+        if init_race not in invalid:
+
+            # if their nontrivial submission is a PHB race, whether typed in lowercase or selected
+            if init_race.title() in database["races"]:
+
+                # use the PHB race to determine name and description
+                race_choice = init_race.title()
+
+                # choosing subrace from PHB to be stored in DB
+                new_race = random.choice([subs for subs in database["subraces"] if race_choice in subs])
+                
+
+            # else, their submission is not a PHB race
+            else:
+
+                # display what they typed exactly as it is
+                new_race = init_race
+
+                # make a random choice to determine name and appearance
+                race_choice = random.choice(database["races"])
+
+        else: 
+
+            # if user submits nothing, then make the random choice
+            race_choice = random.choice(database["races"])
+
+            # choosing subrace from PHB to be stored in DB
+            new_race = random.choice([subs for subs in database["subraces"] if race_choice.title() in subs])
+
+        # if user inputs were not nothing, save them as the character's feature
+        # otherwise, make a random choice from the stored options
         char = {
-            "Name": init_name if init_name not in invalid else name_from_race(new_race.lower(), sex),
-            "Race": subrace,
+            "Name": init_name if init_name not in invalid else name_from_race(race_choice.lower(), sex),
+            "Race": new_race,
             "Class": init_class if init_class not in invalid else sub_from_main(database["subclasses"], database["classes"]), 
             "Background": init_bg if init_bg not in invalid else random.choice(database["backgrounds"]),
             "Motivation": init_motiv if init_motiv not in invalid else random.choice(database["motivations"]),
             "Alignment": init_align if init_align not in invalid else random.choice(database["alignments"]),
             "Personality": init_personality if init_personality not in invalid else random.sample(database["personalities"], 4),
-            "Mood": init_mood if init_mood not in invalid else random.sample(database["moods"], 3)
+            "Mood": init_mood if init_mood not in invalid else random.sample(database["moods"], 3),
+            "Physical Description": init_phys_desc if init_phys_desc not in invalid else random.choice(database["physical_desc"][race_choice])
         }
         chars_out.append(char)
 
@@ -288,15 +345,24 @@ def sub_from_main(subset, mainset):
     sub = random.choice([subs for subs in subset if main in subs])
     return sub
 
+
 # function that makes the respective calls to OpenAI's API depending on the desired type of output
-def OpenAIcall(prompt_in): #next step - takes type and prompt as input
+
+def OpenAIcall(prompt_in): #next step - code takes type (image, music, text) and prompt as input
     
+    # text completion function
     text_response = openai.Completion.create(
+
+        # choosing the model that makes the calls
         model="text-davinci-003",
         prompt= prompt_in,
+
+        # setting the level of randomness - higher values -> more random outputs
         temperature=0.6,
-        max_tokens = 1000
+
+        # length of the response output - 500 tokens is approximately 350 words
+        max_tokens = 500
         )
-    print(text_response["choices"][0]["text"])
+    
     return text_response["choices"][0]["text"].replace('\n', '')
 

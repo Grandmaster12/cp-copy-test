@@ -2,10 +2,11 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from os import path
 from flask_login import LoginManager
+from flask_migrate import Migrate
 
 # __init__ creates a python package out of this folder
 db = SQLAlchemy()
-DB_NAME = "CPDB.db"
+DB_NAME = "test-DB.db"
 
 # code that only creates the app once the function and the package are run
 def create_app():
@@ -27,11 +28,7 @@ def create_app():
     
     # create the database and link it to the app CP
     db.init_app(CP)
-    with CP.app_context():
-        
-        # if db already exists, for now, get rid of it and create new tables
-        db.drop_all()
-        db.create_all()
+    migrate = Migrate(CP, db)
 
     login_manager = LoginManager()
 

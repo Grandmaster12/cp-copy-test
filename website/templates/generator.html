@@ -1,6 +1,11 @@
-{% extends "base.html" %} {% block head %}Generator | D&D Character Generator{%
-endblock %} {% block body %}
-<h1 style="text-align: center">D&D Character Manager and Generator</h1>
+{% extends "base.html" %} 
+
+{% block head %}
+  Generator | Creacter
+{%endblock %} 
+{% block body %}
+<h1 style="text-align: center">Creacter</h1>
+<h3 style="text-align: center">D&D Character Manager and Generator</h3>
 
 <!--
   The main page with all the functionality for character managing, viewing, and generating.
@@ -32,6 +37,7 @@ endblock %} {% block body %}
         <th>Alignment</th>
         <th>Personality</th>
         <th>Mood</th>
+        <th>Physical Description</th>
         <th>Actions</th>
       </tr>
       {% for char in user.characters %}
@@ -44,6 +50,7 @@ endblock %} {% block body %}
         <td>{{ char.char_align }}</td>
         <td>{{ char.char_personality }}</td>
         <td>{{ char.char_mood }}</td>
+        <td>{{ char.char_phys_desc }}</td>
         <td>
           <a href="/delete/{{char.id}}">Delete</a>
           <br />
@@ -61,9 +68,9 @@ endblock %} {% block body %}
   -->
   <h2>Character Creation</h2>
   <p>
-    There are two possible options to facilitate character creation:
-    Randomisation from the PHB (Player's Handbook), and AI Generation using
-    OpenAI's GPT3 model.
+    There are two possible methods to facilitate character creation: <br>
+    Randomisation from the PHB (Player's Handbook) <br>
+    AI Generation using OpenAI's GPT-3 model.
   </p>
   <br />
 
@@ -73,42 +80,156 @@ endblock %} {% block body %}
     be filled in with random options
   </p>
   <p>
-    Note: for Race, please only choose from one of the races in the PHB, namely:
-    Dwarf, Elf, Halfling, Human, Dragonborn, Gnome, Half-Elf, Half-Orc, or
-    Tiefling
+    Notes: <br>
+    For Race, you can either select an option from the PHB or type something different. <br>
+    Currently, the choice of name and physical description are linked to PHB races so typing a non-PHB race
+    into the field means the race for the name and physical description will be randomly chosen. 
   </p>
   <!--
     Creating the generator form using the basic random choice functionality
   -->
   <div class="generator">
     <form action="/generator" method="POST" id="init_char">
-      <label for="name">Name:</label><br />
+      <label for="init_name">Name:</label><br />
       <input type="text" name="init_name" id="init_name" /><br /><br />
 
-      <label for="class">Class or subclass:</label><br />
-      <input type="text" name="init_class" id="init_class" /><br /><br />
+      <label for="init_class">Class or subclass:</label><br />
+      <input type="text" name="init_class" id="init_class" list="class-options"/>
+        <datalist id="class-options">
+          <option value="Barbarian">Barbarian</option>
+            <option value="Path of the Berserker Barbarian">Path of the Berserker Barbarian</option>
+            <option value="Path of the Totem Warrior Barbarian">Path of the Totem Warrior Barbarian</option>
+          <option value="Bard">Bard</option>
+            <option value="College of Lore Bard">College of Lore Bard</option>
+            <option value="College of Valor Bard">College of Valor Bard</option>
+          <option value="Cleric">Cleric</option>
+            <option value="Knowledge Domain Cleric">Knowledge Domain Cleric</option>
+            <option value="Nature Domain Cleric">Nature Domain Cleric</option>
+            <option value="Light Domain Cleric">Light Domain Cleric</option>
+            <option value="Life Domain Cleric">Life Domain Cleric</option>
+            <option value="Tempest Domain Cleric">Tempest Domain Cleric</option>
+            <option value="Trickery Domain Cleric">Trickery Domain Cleric</option>
+            <option value="War Domain Cleric">War Domain Cleric</option>
+          <option value="Druid">Druid</option>
+            <option value="Circle of the Moon Druid">Circle of the Moon Druid</option>
+            <option value="Circle of the Land Druid">Circle of the Land Druid</option>
+          <option value="Fighter">Fighter</option>
+            <option value="Champion Fighter">Champion Fighter</option>
+            <option value="Battlemaster Fighter">Battlemaster Fighter</option>
+            <option value="Eldritch Knight Fighter">Eldritch Knight Fighter</option>
+          <option value="Monk">Monk</option>
+            <option value="Way of the Open Hand Monk">Way of the Open Hand Monk</option>
+            <option value="Way of the Shadow Monk">Way of the Shadow Monk</option>
+            <option value="Way of the Four Elements Monk">Way of the Four Elements Monk</option>
+          <option value="Paladin">Paladin</option>
+            <option value="Oath of Devotion Paladin">Oath of Devotion Paladin</option>
+            <option value="Oath of the Ancients Paladin">Oath of the Ancients Paladin</option>
+            <option value="Oath of Vengeance Paladin">Oath of Vengeance Paladin</option>
+            <option value="Oathbreaker Paladin">Oathbreaker Paladin</option>
+          <option value="Ranger">Ranger</option>
+            <option value="Beast Master Ranger">Beast Master Ranger</option>
+            <option value="Hunter Ranger">Hunter Ranger</option>
+          <option value="Rogue">Rogue</option>
+            <option value="Arcane Trickster Rogue">Arcane Trickster Rogue</option>
+            <option value="Assassin Rogue">Assassin Rogue</option>
+            <option value="Thief Rogue">Thief Rogue</option>
+          <option value="Sorcerer">Sorcerer</option>
+            <option value="Wild Magic Sorcerer">Wild Magic Sorcerer</option>
+            <option value="Draconic Bloodline Sorcerer">Draconic Bloodline Sorcerer</option>
+          <option value="Warlock">Warlock</option>
+            <option value="Pact of the Chain Warlock of the Great Old One">Pact of the Chain Warlock of the Great Old One</option>
+            <option value="Pact of the Chain Warlock of the Archfey">Pact of the Chain Warlock of the Archfey</option>
+            <option value="Pact of the Chain Warlock of the Fiend">Pact of the Chain Warlock of the Fiend</option>
+            <option value="Pact of the Blade Warlock of the Great Old One">Pact of the Blade Warlock of the Great Old One</option>
+            <option value="Pact of the Blade Warlock of the Archfey">Pact of the Blade Warlock of the Archfey</option>
+            <option value="Pact of the Blade Warlock of the Fiend">Pact of the Blade Warlock of the Fiend</option>
+            <option value="Pact of the Tome Warlock of the Great Old One">Pact of the Tome Warlock of the Great Old One</option>
+            <option value="Pact of the Tome Warlock of the Archfey">Pact of the Tome Warlock of the Archfey</option>
+            <option value="Pact of the Tome Warlock of the Fiend">Pact of the Tome Warlock of the Fiend</option>
+          <option value="Wizard">Wizard</option>
+            <option value="Abjuration Wizard">Abjuration Wizard</option>
+            <option value="Conjuration Wizard">Conjuration Wizard</option>
+            <option value="Divination Wizard">Divination Wizard</option>
+            <option value="Evocation Wizard">Evocation Wizard</option>
+            <option value="Transmutation Wizard">Transmutation Wizard</option>
+            <option value="Enchantment Wizard">Enchantment Wizard</option>
+            <option value="Illusion Wizard">Illusion Wizard</option>
+            <option value="Necromancy Wizard">Necromancy Wizard</option>
+        </datalist>
+      <br /><br />
 
-      <label for="race">Race (not Subrace):</label><br />
-      <input type="text" name="init_race" id="init_race" /><br /><br />
+      <!--
+        "Autocomplete" field allows choosing PHB options or typing in something different
+      -->
+      <label for="init_race">Race:</label><br />
+      <input type="text" name="init_race" id="init_race" list="race-options">
+        <datalist id="race-options">
+          <option value="Dwarf">Dwarf</option>
+          <option value="Elf">Elf</option>
+          <option value="Halfling">Halfling</option>
+          <option value="Human">Human</option>
+          <option value="Dragonborn">Dragonborn</option>
+          <option value="Gnome">Gnome</option>
+          <option value="Half-Elf">Half-Elf</option>
+          <option value="Half-Orc">Half-Orc</option>
+          <option value="Tiefling">Tiefling</option>
+        </datalist>
+      <br /><br />
 
-      <label for="bg">Background:</label><br />
-      <input type="text" name="init_bg" id="init_bg" /><br /><br />
+      <label for="init_bg">Background:</label><br />
+      <input type="text" name="init_bg" id="init_bg" list="bg-options"/>
+        <datalist id="bg-options">
+          <option value="Acolyte">Acolyte</option>
+          <option value="Charlatan">Charlatan</option>
+          <option value="Criminal">Criminal</option>
+          <option value="Spy (Criminal variant)">Spy (Criminal variant)</option>
+          <option value="Entertainer">Entertainer</option>
+          <option value="Gladiator (Entertainer variant)">Gladiator (Entertainer variant)</option>
+          <option value="Folk Hero">Folk Hero</option>
+          <option value="Guild Artisan">Guild Artisan</option>
+          <option value="Guild Merchant (Artisan variant)">Guild Merchant (Artisan variant)</option>
+          <option value="Hermit">Hermit</option>
+          <option value="Noble">Noble</option>
+          <option value="Knight (Noble variant)">Knight (Noble variant)</option>
+          <option value="Outlander">Outlander</option>
+          <option value="Sage">Sage</option>
+          <option value="Sailor">Sailor</option>
+          <option value="Pirate (Sailor variant)">Pirate (Sailor variant)</option>
+          <option value="Soldier">Soldier</option>
+          <option value="Urchin">Urchin</option>
+        </datalist>
+      <br /><br />
 
-      <label for="motiv">Motivation:</label><br />
+      <label for="init_motiv">Motivation:</label><br />
       <input type="text" name="init_motiv" id="init_motiv" /><br /><br />
 
-      <label for="align">Alignment:</label><br />
-      <input type="text" name="init_align" id="init_align" /><br /><br />
+      <label for="init_align">Alignment:</label><br />
+      <input type="text" name="init_align" id="init_align" list="align-options"/>
+        <datalist id="align-options">
+          <option value="Lawful Good",>Lawful Good</option>
+          <option value="Lawful Neutral">Lawful Neutral</option>
+          <option value="Lawful Evil">Lawful Evil</option>
+          <option value="Neutral Good">Neutral Good</option>
+          <option value="True Neutral">True Neutral</option>
+          <option value="Neutral Evil">Neutral Evil</option>
+          <option value="Chaotic Good">Chaotic Good</option>
+          <option value="Chaotic Neutral">Chaotic Neutral</option>
+          <option value="Chaotic Evil">Chaotic Evil</option>
+        </datalist>
+      <br /><br />
 
-      <label for="personality">Personality:</label><br />
+      <label for="init_personality">Personality:</label><br />
       <input
         type="text"
         name="init_personality"
         id="init_personality"
       /><br /><br />
 
-      <label for="mood">Mood:</label><br />
+      <label for="init_mood">Mood:</label><br />
       <input type="text" name="init_mood" id="init_mood" /><br /><br />
+
+      <label for="init_phys_desc">Physical Description:</label><br />
+      <input type="text" name="init_phys_desc" id="init_phys_desc" /><br /><br />
 
       <p>
         Choose a number of characters to generate. <br />
@@ -116,7 +237,7 @@ endblock %} {% block body %}
         same across the number of characters you generate.
       </p>
 
-      <label for="fname">Number of Characters:</label><br />
+      <label for="num_chars">Number of Characters:</label><br />
       <input type="number" name="num_chars" id="num_chars" /><br />
       <div style="text-align: center">
         <button type="submit" class="btn btn-primary" id="random">
