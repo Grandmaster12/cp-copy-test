@@ -2,12 +2,12 @@
 import random, re, openai, os
 
 # use for Heroku deployment
-#openai.api_key = os.environ["OPENAI_KEY"]
+openai.api_key = os.environ["OPENAI_KEY"]
 
 # uncomment and use for local testing
-from dotenv import load_dotenv
-load_dotenv()
-openai.api_key = os.getenv("OPENAI_KEY")
+# from dotenv import load_dotenv
+# load_dotenv()
+# openai.api_key = os.getenv("OPENAI_KEY")
 
 # file names
 files = ["classes", "races", "backgrounds", "subraces", "subclasses", "personalities", "moods"]

@@ -38,6 +38,7 @@
         <th>Personality</th>
         <th>Mood</th>
         <th>Physical Description</th>
+        <th>Test</th>
         <th>Actions</th>
       </tr>
       {% for char in user.characters %}
@@ -51,6 +52,7 @@
         <td>{{ char.char_personality }}</td>
         <td>{{ char.char_mood }}</td>
         <td>{{ char.char_phys_desc }}</td>
+        <td>{{ char.char_test }}</td>
         <td>
           <a href="/delete/{{char.id}}">Delete</a>
           <br />
